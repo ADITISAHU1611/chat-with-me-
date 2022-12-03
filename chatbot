@@ -1,0 +1,73 @@
+import speech_recognition as sr
+import pyttsx3
+import pyaudio 
+import pywhatkit
+import datetime
+import wikipedia
+import pyjokes
+import pyautogui
+import webbrowser 
+
+listener = sr.Recognizer()
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice',voices[1].id)
+
+def talk(text):
+    engine.say(text)
+    engine.runAndWait()
+
+def take_command():
+    try:
+        with sr.Microphone() as source:
+            print('listening...') 
+            voice = listener.listen(source)
+            command = listener.recognize_google(voice)
+            command = command.lower()
+            if 'chatbot' in command:
+                command = command.replace('chatbot','')
+                print(command)
+    except:
+        pass
+    return command
+
+def run_chatbot():
+    command = take_command()
+    print(command)
+    if 'play' in command:
+        song = command.replace('play','')
+        talk('playing' + song)
+        pywhatkit.playonyt(song)    
+    elif 'time' in command:
+        time = datetime.datetime.now().strftime('%I:%M %p')
+        print(time)
+        talk('Current time is' + time)
+    elif 'tell me something about' in command or 'search' in command:  
+        person = command.replace('tell me something about','')
+        info = wikipedia.summary(person,2)
+        print(info)
+        talk(info)
+    elif 'open geeksforgeeks' in command:
+            talk("Opening GeeksforGeeks ")
+            webbrowser.open("www.geeksforgeeks.com")
+    elif 'open google' in command:
+            talk("Opening Google ")
+            webbrowser.open("www.google.com")        
+    elif 'date' in command:
+        talk('sorry,I have a headache')
+    elif 'are you single' in command:
+        talk('I am in a relationship')  
+    elif 'tell me a joke' in command:
+        talk(pyjokes.get_joke())    
+    elif 'volume up' in command:
+        pyautogui.press('volumeup')
+    elif 'volume down' in command:
+        pyautogui.press('volumedown')
+    elif 'volume mute' in command or 'mute' in command:
+        pyautogui.press('volumemute')
+    else :
+        talk('Please say the command again.')       
+
+
+while True:
+    run_chatbot()
